@@ -29,11 +29,6 @@ if (!$host) {
 try {
     // DSN = Data Source Name (The string that describes the DB)
     $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
-    echo "$host \n";
-    echo "$user \n";
-    echo "$pass \n";
-    echo "$db   \n";
-    echo "$port \n";
 
     $options = [
         PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, // Throw errors!
@@ -42,8 +37,6 @@ try {
     ];
 
     $pdo = new PDO($dsn, $user, $pass, $options);
-    echo "Works";
-    print_r($pdo);
 
 } catch (\PDOException $e) {
     error_log("DB CONNECTION ERROR: " . $e->getMessage());
