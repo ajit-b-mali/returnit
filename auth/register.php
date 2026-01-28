@@ -1,6 +1,6 @@
 <?php
-require __DIR__ . '/config/session.php';
-require __DIR__ . '/config/db.php';
+require __DIR__ . '/../config/session.php';
+require __DIR__ . '/../config/db.php';
 
 $error = '';
 $success = '';

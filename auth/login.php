@@ -1,7 +1,7 @@
 <?php
 
-require __DIR__ . '/config/session.php';
-require __DIR__ . '/config/db.php';
+require __DIR__ . '/../config/session.php';
+require __DIR__ . '/../config/db.php';
 
 $error = '';
 
@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         session_regenerate_id(true);
         $_SESSION['user_id'] = $user['id'];
 
-        header('Location: index.php');
+        header('Location: /');
         exit;
     }
 
