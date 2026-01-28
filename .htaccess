@@ -1,0 +1,25 @@
+Options -Indexes
+Options +FollowSymLinks
+DirectoryIndex index.php
+
+<FilesMatch "\.(sql|log|ini|env)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Prevent access to includes folder
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^includes/ - [F,L]
+</IfModule>
+
+ErrorDocument 404 /404.php
+
+# Remove .php extension
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME}.php -f
+    RewriteRule ^([^\.]+)$ $1.php [NC,L]
+</IfModule>

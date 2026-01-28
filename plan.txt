@@ -1,0 +1,397 @@
+The project is **functionally complete** for daily use. You can stop here and have a great tool.
+
+However, since you said this is a **real application** for personal use, there are **3 Advanced Expansions** that usually separate "simple trackers" from "powerful tools."
+
+If you want to keep building, here is the roadmap to make this app indispensable.
+
+---
+
+### Expansion 1: Partial Payments (The "Real Life" Feature)
+
+Currently, a debt is either **Unpaid** or **Paid**.
+**Reality:** You lend John $100. He pays you back $20 today, $30 next week.
+**Current App:** You have to manually edit the debt from $100 to $80.
+**Better App:** You record a "payment," and it calculates the balance automatically.
+
+**How to add it:**
+
+1. **New Table:** `debt_history` (links to `debts`).
+2. **Logic:** Instead of `paid = 1`, you calculate `(original_amount - sum(payments))`.
+
+**SQL:**
+
+```sql
+CREATE TABLE debt_payments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    debt_id INT NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    paid_date DATE DEFAULT CURRENT_DATE,
+    note VARCHAR(255),
+    FOREIGN KEY (debt_id) REFERENCES debts(id) ON DELETE CASCADE
+);
+
+```
+
+**PHP Logic (Inside `dashboard.php`):**
+When fetching debts, you also fetch the *sum* of payments.
+
+```php
+// Fetch Debts with Balance Calculation
+$sql = "SELECT d.*, 
+       (d.amount - COALESCE(SUM(p.amount), 0)) as remaining_balance 
+       FROM debts d 
+       LEFT JOIN debt_payments p ON d.id = p.debt_id 
+       WHERE d.user_id = ? 
+       GROUP BY d.id";
+
+```
+
+Now, instead of a "Mark Paid" button, you have a **"Record Payment"** button that opens a mini-modal asking "How much did they pay?".
+
+---
+
+### Expansion 2: Proof & Context (Image Uploads)
+
+**Scenario:** You lend your expensive camera to Mike.
+**Problem:** He returns it scratched. He says, "It was already like that."
+**Solution:** Upload a photo of the item *before* you lend it.
+
+**How to add it:**
+
+1. **Update Database:** Add `image_path` VARCHAR(255) to `items` table.
+2. **Update Form:** Add `<input type="file" name="item_image">`.
+3. **PHP Handling:**
+
+```php
+// Inside your "Add Item" logic
+if (isset($_FILES['item_image']) && $_FILES['item_image']['error'] == 0) {
+    $allowed = ['jpg', 'jpeg', 'png'];
+    $ext = strtolower(pathinfo($_FILES['item_image']['name'], PATHINFO_EXTENSION));
+    
+    if (in_array($ext, $allowed)) {
+        $new_name = uniqid() . "." . $ext;
+        move_uploaded_file($_FILES['item_image']['tmp_name'], "uploads/" . $new_name);
+        // Save $new_name to database
+    }
+}
+
+```
+
+**Display:** Show a small thumbnail in the table. Click to view full size (Modal).
+
+---
+
+### Expansion 3: Visual Analytics (The "Fun" Part)
+
+Seeing a list is boring. Seeing a **Pie Chart** of "Who owes me the most money?" is satisfying.
+
+**How to add it:**
+Use a library like **Chart.js** (it's very easy, just one script tag).
+
+**Add to `dashboard.php`:**
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm">
+    <canvas id="myChart"></canvas>
+</div>
+
+<script>
+    // Get PHP data into JS
+    const names = <?php echo json_encode(array_column($debts, 'borrower')); ?>;
+    const amounts = <?php echo json_encode(array_column($debts, 'amount')); ?>;
+
+    new Chart(document.getElementById('myChart'), {
+        type: 'doughnut',
+        data: {
+            labels: names,
+            datasets: [{
+                label: 'Owed Amount',
+                data: amounts,
+                backgroundColor: ['#4F46E5', '#10B981', '#F59E0B', '#EF4444']
+            }]
+        }
+    });
+</script>
+
+```
+
+---
+
+### Which one should you build?
+
+1. If you lend **Money** often: Build **Partial Payments** first. It's essential logic.
+2. If you lend **Tools/Gear** often: Build **Image Uploads**. It protects your property.
+3. If you just want it to look **Cool**: Build **Analytics**.
+
+Do you want code for any of these specific expansions?
+That changes everything! If this is a **Daily Driver Application** for your personal use, "Portfolio" constraints (like keeping code simple for show) go out the window. **Reliability, Data Integrity, and Ease of Use** are now the priority.
+
+To make this a tool you can actually rely on, you are missing **The "U" in CRUD (Update/Edit)**.
+
+In real life, you will make typos. You’ll enter `$50` instead of `$500`, or `John` instead of `John S`. Currently, you have to delete and re-add the entry, which is annoying.
+
+Here is the upgrade package to make this production-ready.
+
+---
+
+### 1. Add "Edit" Capability (The Missing Piece)
+
+We will upgrade your Dashboard so you can click a "Pencil" icon, and the modal will pop up pre-filled with the existing data.
+
+**Step A: Update `dashboard.php` PHP Logic (Top of file)**
+Add this block to handle updates.
+
+```php
+// --- UPDATE ITEM ---
+if (isset($_POST['update_item'])) {
+    $id = $_POST['item_id'];
+    $name = trim($_POST['item_name']);
+    $borrower = trim($_POST['borrower']);
+    $date = $_POST['due_date'];
+    
+    $stmt = $pdo->prepare("UPDATE items SET item_name=?, borrower=?, due_date=? WHERE id=? AND user_id=?");
+    $stmt->execute([$name, $borrower, $date, $id, $user_id]);
+    $msg = "Item updated.";
+}
+
+// --- UPDATE DEBT ---
+if (isset($_POST['update_debt'])) {
+    $id = $_POST['debt_id'];
+    $amount = $_POST['amount'];
+    $borrower = trim($_POST['borrower']);
+    $desc = trim($_POST['description']);
+    
+    $stmt = $pdo->prepare("UPDATE debts SET amount=?, borrower=?, description=? WHERE id=? AND user_id=?");
+    $stmt->execute([$amount, $borrower, $desc, $id, $user_id]);
+    $msg = "Debt updated.";
+}
+
+```
+
+**Step B: Update the Buttons in `dashboard.php` Table**
+We need to inject the data into the button so JavaScript can grab it. Update your **Item Row** actions:
+
+```html
+<td class="p-4 text-right flex items-center justify-end gap-2">
+    <button onclick='openEditItem(<?php echo json_encode($item); ?>)' 
+            class="text-slate-400 hover:text-blue-500 transition-colors" title="Edit">
+        <i class="fas fa-pencil-alt"></i>
+    </button>
+    
+    <form method="POST" onsubmit="return confirm('Delete this?');" class="inline">
+        <input type="hidden" name="type" value="item">
+        <input type="hidden" name="id" value="<?php echo $item['id']; ?>">
+        <button type="submit" name="delete_entry" class="text-slate-400 hover:text-red-500 transition-colors"><i class="fas fa-trash-alt"></i></button>
+    </form>
+</td>
+
+```
+
+*Do the same for the Debt loop, but call `openEditDebt(...)`.*
+
+**Step C: Update the Modals to Support Editing**
+We need hidden inputs to store the ID, and we need to tweak the form logic.
+
+**Item Modal:**
+
+```html
+<form method="POST" class="p-6" id="itemForm">
+    <input type="hidden" name="item_id" id="edit_item_id">
+    
+    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4" id="itemModalTitle">Lend an Item</h3>
+    
+    <input type="text" name="item_name" id="input_item_name" ... >
+    <input type="text" name="borrower" id="input_item_borrower" ... >
+    <input type="date" name="due_date" id="input_item_date" ... >
+
+    <div class="mt-6 flex justify-end gap-3">
+        <button type="submit" name="add_item" id="btn_save_item" class="...">Save Item</button>
+        <button type="submit" name="update_item" id="btn_update_item" class="hidden ... bg-blue-600">Update Item</button>
+    </div>
+</form>
+
+```
+
+**Step D: The Magic JavaScript**
+Add this to the bottom of `dashboard.php`. This fills the modal when you click Edit.
+
+```javascript
+function openEditItem(data) {
+    // 1. Open Modal
+    openModal('itemModal');
+    
+    // 2. Change Title & Buttons
+    document.getElementById('itemModalTitle').innerText = "Edit Item";
+    document.getElementById('btn_save_item').classList.add('hidden');
+    document.getElementById('btn_update_item').classList.remove('hidden');
+
+    // 3. Fill Data
+    document.getElementById('edit_item_id').value = data.id;
+    document.getElementById('input_item_name').value = data.item_name;
+    document.getElementById('input_item_borrower').value = data.borrower;
+    document.getElementById('input_item_date').value = data.due_date;
+}
+
+// Reset modal when opening for "Add New"
+function openAddItem() {
+    openModal('itemModal');
+    document.getElementById('itemForm').reset();
+    document.getElementById('itemModalTitle').innerText = "Lend an Item";
+    document.getElementById('btn_save_item').classList.remove('hidden');
+    document.getElementById('btn_update_item').classList.add('hidden');
+}
+
+```
+
+---
+
+### 2. Data Safety: Database Encoding
+
+Since this is for **personal use**, you might put emojis in descriptions (e.g., "Pizza Night 🍕"). If your DB isn't configured correctly, this will crash the app or save as `????`.
+
+**Update `includes/config.php`:**
+Ensure you explicitly set the charset to `utf8mb4` (Real UTF-8).
+
+```php
+$dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4"; // Add charset here
+$options = [
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES => false,
+];
+try {
+    $pdo = new PDO($dsn, $username, $password, $options);
+} ...
+
+```
+
+---
+
+### 3. Backup Strategy (Critical for Real Apps)
+
+If your Docker container gets deleted or the Render volume fails, **your data is gone**.
+
+Since you are hosting on Render:
+
+1. **Use a Managed Database** (Render PostgreSQL) if possible, as they handle backups.
+2. **Or, Add a "Backup" Button** to your Settings page that dumps a JSON file of everything.
+
+**Add to `settings.php`:**
+
+```php
+if (isset($_POST['download_backup'])) {
+    $backup = [];
+    
+    // Get Items
+    $stmt = $pdo->prepare("SELECT * FROM items WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    $backup['items'] = $stmt->fetchAll();
+
+    // Get Debts
+    $stmt = $pdo->prepare("SELECT * FROM debts WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    $backup['debts'] = $stmt->fetchAll();
+
+    header('Content-Type: application/json');
+    header('Content-Disposition: attachment; filename="returnit_backup_'.date('Y-m-d').'.json"');
+    echo json_encode($backup, JSON_PRETTY_PRINT);
+    exit;
+}
+
+```
+
+*Button HTML:*
+
+```html
+<form method="POST">
+    <button type="submit" name="download_backup" class="text-blue-600 hover:underline">Download Data Backup (JSON)</button>
+</form>
+
+```
+
+---
+
+### 4. Final Polish: "Overdue" Logic
+
+Visual cues help you remember things.
+
+In your `dashboard.php` loop, highlight items that are past due.
+
+```php
+<?php
+// Inside Item Loop
+$is_overdue = false;
+if ($item['due_date'] && $item['due_date'] < date('Y-m-d') && !$item['returned']) {
+    $is_overdue = true;
+}
+?>
+
+<tr class="<?php echo $is_overdue ? 'bg-red-50 dark:bg-red-900/10' : ''; ?> ...">
+    <td class="p-4">
+        <?php if($is_overdue): ?>
+            <span class="text-xs font-bold text-red-600 flex items-center gap-1">
+                <i class="fas fa-exclamation-circle"></i> Overdue
+            </span>
+        <?php endif; ?>
+        </td>
+</tr>
+
+```
+
+**Now it's a real tool.** You can edit mistakes, save emojis, backup your data, and see what's overdue instantly.
+
+B. Add the Button to your Table Rows (inside the tables): Change the "Action" <td> to include a delete icon.
+
+HTML
+<td class="p-4 text-right flex items-center justify-end gap-3">
+    <form method="POST" class="inline">
+        <button>...</button>
+    </form>
+
+    <form method="POST" class="inline" onsubmit="return confirm('Delete this? This cannot be undone.');">
+        <input type="hidden" name="type" value="item"> <input type="hidden" name="id" value="<?php echo $item['id']; ?>">
+        <button type="submit" name="delete_entry" class="text-slate-400 hover:text-red-500 transition-colors" title="Delete">
+            <i class="fas fa-trash-alt"></i>
+        </button>
+    </form>
+</td>
+
+A. Add this to the PHP Handler at the top:
+
+PHP
+// --- DELETE ITEM/DEBT ---
+if (isset($_POST['delete_entry'])) {
+    $id = $_POST['id'];
+    $type = $_POST['type']; // 'item' or 'debt'
+    
+    if ($type === 'item') {
+        $stmt = $pdo->prepare("DELETE FROM items WHERE id = ? AND user_id = ?");
+    } else {
+        $stmt = $pdo->prepare("DELETE FROM debts WHERE id = ? AND user_id = ?");
+    }
+    
+    if ($stmt->execute([$id, $user_id])) {
+        $msg = ucfirst($type) . " deleted successfully.";
+    }
+}
+
+A. Add this to the PHP Handler at the top:
+
+PHP
+// --- DELETE ITEM/DEBT ---
+if (isset($_POST['delete_entry'])) {
+    $id = $_POST['id'];
+    $type = $_POST['type']; // 'item' or 'debt'
+    
+    if ($type === 'item') {
+        $stmt = $pdo->prepare("DELETE FROM items WHERE id = ? AND user_id = ?");
+    } else {
+        $stmt = $pdo->prepare("DELETE FROM debts WHERE id = ? AND user_id = ?");
+    }
+    
+    if ($stmt->execute([$id, $user_id])) {
+        $msg = ucfirst($type) . " deleted successfully.";
+    }
+}
