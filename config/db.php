@@ -19,9 +19,9 @@ if (!$host) {
         $db   = LOCAL_DB_NAME;
         $port = LOCAL_DB_PORT;
     } else {
-        $host = 'localhost';
-        $user = 'root';
-        $pass = '';
+        $host = '127.0.0.1';
+        $user = 'returnit_user';
+        $pass = 'returnit_pass';
         $db   = 'returnit_db';
         $port = 3306;
     }
