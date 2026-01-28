@@ -1,29 +1,29 @@
 <!-- <?php
 
-require __DIR__ . '/../config/session.php';
-require __DIR__ . '/../config/db.php';
+// require __DIR__ . '/../config/session.php';
+// require __DIR__ . '/../config/db.php';
 
-$error = '';
+// $error = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email']);
-    $password = $_POST['password'];
+// if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+//     $email = trim($_POST['email']);
+//     $password = $_POST['password'];
 
-    $stmt = $pdo->prepare("SELECT id, email, password FROM users WHERE email = ?");
-    $stmt->execute([$email]);
+//     $stmt = $pdo->prepare("SELECT id, email, password FROM users WHERE email = ?");
+//     $stmt->execute([$email]);
 
-    $user = $stmt->fetch();
+//     $user = $stmt->fetch();
 
-    if ($user && password_verify($password, $user['password'])) {
-        session_regenerate_id(true);
-        $_SESSION['user_id'] = $user['id'];
+//     if ($user && password_verify($password, $user['password'])) {
+//         session_regenerate_id(true);
+//         $_SESSION['user_id'] = $user['id'];
 
-        header('Location: /');
-        exit;
-    }
+//         header('Location: /');
+//         exit;
+//     }
 
-    $error = "Invalid email or password";
-}
+//     $error = "Invalid email or password";
+// }
 ?>
 
 <!DOCTYPE html>
@@ -36,9 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <h2>Login</h2>
     
-    <?php if($error): ?>
-        <p style="color: red"><?= htmlspecialchars($error) ?></p>
-    <?php endif; ?>
 
     <form method="post">
         <input type="email" name="email" id="email">

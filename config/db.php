@@ -1,6 +1,4 @@
 <?php
-/* File: config/db.php using PDO */
-
 // 1. Get credentials (Render Env or Local Fallback)
 $host = getenv('DB_HOST');
 $user = getenv('DB_USER');
@@ -31,7 +29,12 @@ if (!$host) {
 try {
     // DSN = Data Source Name (The string that describes the DB)
     $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
-    
+    echo "$host \n";
+    echo "$user \n";
+    echo "$pass \n";
+    echo "$db   \n";
+    echo "$port \n";
+
     $options = [
         PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, // Throw errors!
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,       // Return arrays
@@ -39,9 +42,11 @@ try {
     ];
 
     $pdo = new PDO($dsn, $user, $pass, $options);
+    echo "Works";
+    print_r($pdo);
 
 } catch (\PDOException $e) {
-    // In production, log this error instead of showing it
-    die("Database Connection Failed: " . $e->getMessage());
+    error_log("DB CONNECTION ERROR: " . $e->getMessage());
+    die("Service temporarily unavailable. Please try again later.\n");
 }
 ?>
