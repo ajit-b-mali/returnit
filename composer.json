@@ -1,0 +1,19 @@
+{
+    "name": "ajit-b-mali/returnit",
+    "description": "A personal lending manager to track items and money owed.",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "aj\\ReturnIt\\": "includes/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ajit Mali",
+            "email": "ajitbm2003@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
