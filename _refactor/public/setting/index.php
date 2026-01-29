@@ -1,6 +1,53 @@
-<!-- <?php
-// include 'includes/header.php'; // Reuse your head/nav code
-// ?>
+<?php
+require_once __DIR__ . '/../../config/db.php';
+
+// Auth Guard
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: /login");
+    exit;
+}
+
+$msg = "";
+$error = "";
+$user_id = $_SESSION['user_id'];
+
+// Handle Form Submission
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    
+    // --- UPDATE PASSWORD ---
+    if (isset($_POST['update_password'])) {
+        $new_pass = $_POST['new_password'];
+        if (strlen($new_pass) < 6) {
+            $error = "Password must be at least 6 characters.";
+        } else {
+            $hash = password_hash($new_pass, PASSWORD_DEFAULT);
+            $stmt = $pdo->prepare("UPDATE users SET password_hash = ? WHERE id = ?");
+            if ($stmt->execute([$hash, $user_id])) {
+                $msg = "Password updated successfully.";
+            }
+        }
+    }
+
+    // --- DELETE ACCOUNT ---
+    if (isset($_POST['delete_account'])) {
+        $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
+        if ($stmt->execute([$user_id])) {
+            session_destroy();
+            header("Location: /"); // Redirect to home
+            exit;
+        }
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<?php require '../../app/Views/components/head.php' ?>
+
+<body>
 
 <div class="max-w-4xl mx-auto px-4 py-10">
     <h2 class="text-2xl font-bold text-slate-900 mb-6">Account Settings</h2>
@@ -31,47 +78,7 @@
             <button class="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800">Update Password</button>
         </form>
     </div>
-</div> -->
-
-<?php
-require_once __DIR__ . '/config/db.php';
-require_once __DIR__ . '/includes/header.php';
-
-// Auth Guard
-// if (!isset($_SESSION['user_id'])) { header("Location: login.php"); exit; }
-
-$msg = "";
-$error = "";
-$user_id = $_SESSION['user_id'];
-
-// Handle Form Submission
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    
-    // --- UPDATE PASSWORD ---
-    if (isset($_POST['update_password'])) {
-        $new_pass = $_POST['new_password'];
-        if (strlen($new_pass) < 6) {
-            $error = "Password must be at least 6 characters.";
-        } else {
-            $hash = password_hash($new_pass, PASSWORD_DEFAULT);
-            $stmt = $pdo->prepare("UPDATE users SET password_hash = ? WHERE id = ?");
-            if ($stmt->execute([$hash, $user_id])) {
-                $msg = "Password updated successfully.";
-            }
-        }
-    }
-
-    // --- DELETE ACCOUNT ---
-    if (isset($_POST['delete_account'])) {
-        $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
-        if ($stmt->execute([$user_id])) {
-            session_destroy();
-            header("Location: index.php"); // Redirect to home
-            exit;
-        }
-    }
-}
-?>
+</div>
 
 <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <h1 class="text-3xl font-display font-bold text-slate-900 mb-8">Account Settings</h1>
@@ -118,5 +125,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     </div>
 </main>
+
 </body>
 </html>

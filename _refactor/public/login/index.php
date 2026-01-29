@@ -5,13 +5,13 @@
  */
 
 session_start();
-require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/../../config/db.php';
 
 // --------------------------------------------------------------------------
 // 1. Redirect if already logged in
 // --------------------------------------------------------------------------
 if (isset($_SESSION['user_id'])) {
-    header("Location: dashboard.php");
+    header("Location: /dashboard");
     exit;
 }
 
@@ -55,68 +55,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="en" class="h-full">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - ReturnIt</title>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Fonts and Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Tailwind Config & Custom Animations -->
-    <script>
-        tailwind.config = {
-            darkMode: 'class', // Enable class-based dark mode
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Space Grotesk', 'sans-serif'],
-                    },
-                    colors: {
-                        primary: '#4F46E5', // Indigo 600
-                        secondary: '#10B981', // Emerald 500
-                        dark: '#0F172A', // Slate 900
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'blob': 'blob 7s infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-20px)' },
-                        },
-                        blob: {
-                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
-                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
-                        }
-                    }
-                }
-            }
-        }
+<?php
+    $pageTitle = 'login - ReturnIt';
+    require '../../app/Views/components/head.php'
+?>
 
-        // Initialize Dark Mode from LocalStorage or System Preference
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark')
-        } else {
-            document.documentElement.classList.remove('dark')
-        }
-    </script>
-    <style>
-        .glass-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-    </style>
-</head>
 <body class="bg-white dark:bg-slate-900 transition-colors duration-200">
 
     <div class="flex min-h-screen">
@@ -135,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="mx-auto w-full max-w-sm lg:w-96">
                 
                 <!-- Logo -->
-                <a href="index.php" class="flex items-center gap-2 mb-10 group">
+                <a href="/" class="flex items-center gap-2 mb-10 group">
                     <div class="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded flex items-center justify-center text-white font-bold shadow-md group-hover:scale-110 transition-transform">
                         R
                     </div>
@@ -147,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <h2 class="mt-6 text-3xl font-display font-bold text-slate-900 dark:text-white transition-colors">Welcome back</h2>
                     <p class="mt-2 text-sm text-slate-600 dark:text-slate-400 transition-colors">
                         New here? 
-                        <a href="register.php" class="font-medium text-primary hover:text-indigo-500 transition-colors">Create an account</a>
+                        <a href="/register" class="font-medium text-primary hover:text-indigo-500 transition-colors">Create an account</a>
                     </p>
                 </div>
 
@@ -309,60 +253,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </div>
 
-    <script>
-        // --------------------------------------------------------------------------
-        // Dark Mode Toggle Logic
-        // --------------------------------------------------------------------------
-        function toggleTheme() {
-            if (document.documentElement.classList.contains('dark')) {
-                document.documentElement.classList.remove('dark');
-                localStorage.theme = 'light';
-            } else {
-                document.documentElement.classList.add('dark');
-                localStorage.theme = 'dark';
-            }
-        }
-
-        // --------------------------------------------------------------------------
-        // Password Visibility Toggle
-        // --------------------------------------------------------------------------
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const eyeIcon = document.getElementById('eyeIcon');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                eyeIcon.classList.remove('fa-eye');
-                eyeIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                eyeIcon.classList.remove('fa-eye-slash');
-                eyeIcon.classList.add('fa-eye');
-            }
-        }
-
-        // --------------------------------------------------------------------------
-        // Close Error Alert
-        // --------------------------------------------------------------------------
-        function closeError() {
-            const alert = document.getElementById('errorAlert');
-            if(alert) {
-                alert.style.display = 'none';
-            }
-        }
-
-        // --------------------------------------------------------------------------
-        // Form Submission Loading State
-        // --------------------------------------------------------------------------
-        document.querySelector('form').addEventListener('submit', function() {
-            const btn = document.getElementById('submitBtn');
-            const txt = document.getElementById('btnText');
-            const spinner = document.getElementById('btnSpinner');
-            
-            btn.classList.add('opacity-75', 'cursor-not-allowed');
-            txt.innerText = 'Signing in...';
-            spinner.classList.remove('hidden');
-        });
-    </script>
+    <script src="/assets/js/dark.js"></script>
 </body>
 </html>

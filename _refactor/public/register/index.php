@@ -1,116 +1,77 @@
 <?php
-session_start();
-require_once __DIR__ . '/../config/db.php';
+    session_start();
+    require_once __DIR__ . '/../../config/db.php';
 
-// 1. Redirect if already logged in
-if (isset($_SESSION['user_id'])) {
-    header("Location: dashboard.php");
-    exit;
-}
-
-$error = '';
-$success = '';
-
-// 2. Handle Form Submission
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Sanitize inputs
-    $username = trim($_POST['username']);
-    $email = trim($_POST['email']);
-    $password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
-
-    // Basic Validation
-    if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
-        $error = "All fields are required.";
-    } elseif ($password !== $confirm_password) {
-        $error = "Passwords do not match.";
-    } elseif (strlen($password) < 6) {
-        $error = "Password must be at least 6 characters.";
-    } else {
-        // Check if email or username already exists
-        $stmt = $pdo->prepare("SELECT id FROM users WHERE email = :email OR username = :username");
-        $stmt->execute(['email' => $email, 'username' => $username]);
-        
-        if ($stmt->rowCount() > 0) {
-            $error = "Username or Email already taken.";
-        } else {
-            // Hash Password
-            $password_hash = password_hash($password, PASSWORD_DEFAULT);
-
-            // Insert User
-            $sql = "INSERT INTO users (username, email, password_hash) VALUES (:username, :email, :password_hash)";
-            $stmt = $pdo->prepare($sql);
-            
-            if ($stmt->execute(['username' => $username, 'email' => $email, 'password_hash' => $password_hash])) {
-                // Redirect to login with success message
-                header("Location: login.php?registered=true");
-                exit;
-            } else {
-                $error = "Something went wrong. Please try again.";
-            }
-        }
+    // 1. Redirect if already logged in
+    if (isset($_SESSION['user_id'])) {
+        header("Location: dashboard.php");
+        exit;
     }
-}
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - ReturnIt</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Space Grotesk', 'sans-serif'],
-                    },
-                    colors: {
-                        primary: '#4F46E5', // Indigo
-                        secondary: '#10B981', // Emerald
-                        dark: '#0F172A', 
-                    },
-                    animation: {
-                        'blob': 'blob 7s infinite',
-                    },
-                    keyframes: {
-                        blob: {
-                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
-                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
-                        }
-                    }
+    $error = '';
+    $success = '';
+
+    // 2. Handle Form Submission
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        // Sanitize inputs
+        $username = trim($_POST['username']);
+        $email = trim($_POST['email']);
+        $password = $_POST['password'];
+        $confirm_password = $_POST['confirm_password'];
+
+        // Basic Validation
+        if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
+            $error = "All fields are required.";
+        } elseif ($password !== $confirm_password) {
+            $error = "Passwords do not match.";
+        } elseif (strlen($password) < 6) {
+            $error = "Password must be at least 6 characters.";
+        } else {
+            // Check if email or username already exists
+            $stmt = $pdo->prepare("SELECT id FROM users WHERE email = :email OR username = :username");
+            $stmt->execute(['email' => $email, 'username' => $username]);
+            
+            if ($stmt->rowCount() > 0) {
+                $error = "Username or Email already taken.";
+            } else {
+                // Hash Password
+                $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
+                // Insert User
+                $sql = "INSERT INTO users (username, email, password_hash) VALUES (:username, :email, :password_hash)";
+                $stmt = $pdo->prepare($sql);
+                
+                if ($stmt->execute(['username' => $username, 'email' => $email, 'password_hash' => $password_hash])) {
+                    // Redirect to login with success message
+                    header("Location: /login?registered=true");
+                    exit;
+                } else {
+                    $error = "Something went wrong. Please try again.";
                 }
             }
         }
-    </script>
-    <style>
-        .glass-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        /* Scrollbar hiding for cleaner look on split screen */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    </style>
-</head>
+    }
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<?php
+    $pageTitle = 'Register - ReturnIt';
+    require '../../app/Views/components/head.php'
+?>
+
 <body class="bg-white h-screen overflow-hidden">
 
     <div class="flex min-h-full">
-        
+
+        <!-- ======================================================================= -->
+        <!-- LEFT COLUMN: Registration Form -->
+        <!-- ======================================================================= -->
         <div class="flex-1 flex flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24 z-10 bg-white h-full overflow-y-auto no-scrollbar">
             <div class="mx-auto w-full max-w-sm lg:w-96">
                 
-                <a href="index.php" class="flex items-center gap-2 mb-8 group">
+                <a href="/" class="flex items-center gap-2 mb-8 group">
                     <div class="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded flex items-center justify-center text-white font-bold shadow-md group-hover:scale-110 transition-transform">
                         R
                     </div>
@@ -121,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <h2 class="mt-2 text-3xl font-display font-bold text-slate-900">Create Account</h2>
                     <p class="mt-2 text-sm text-slate-600">
                         Already have an account? 
-                        <a href="login.php" class="font-medium text-primary hover:text-indigo-500 transition-colors">Sign in here</a>
+                        <a href="/login" class="font-medium text-primary hover:text-indigo-500 transition-colors">Sign in here</a>
                     </p>
                 </div>
 
@@ -135,7 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <?php endif; ?>
 
                 <div class="mt-8">
-                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST" class="space-y-5" id="regForm">
+                    <form action="/register" method="POST" class="space-y-5" id="regForm">
                         
                         <div>
                             <label for="username" class="block text-sm font-medium text-slate-700">Username</label>
@@ -206,6 +167,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
 
+        <!-- ======================================================================= -->
+        <!-- RIGHT COLUMN: Decorative Image (Hidden on Mobile) -->
+        <!-- ======================================================================= -->
         <div class="hidden lg:block relative w-0 flex-1 bg-slate-900 overflow-hidden">
             <div class="absolute top-0 -left-4 w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
             <div class="absolute bottom-0 -right-4 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
@@ -258,50 +222,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </div>
 
-    <script>
-        const password = document.getElementById('password');
-        const confirm = document.getElementById('confirm_password');
-        const matchIcon = document.getElementById('matchIcon');
-        const matchError = document.getElementById('matchError');
-        const submitBtn = document.getElementById('submitBtn');
-
-        // Real-time password matching
-        function checkMatch() {
-            if (confirm.value === '') {
-                matchIcon.classList.add('hidden');
-                matchError.classList.add('hidden');
-                confirm.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
-                return;
-            }
-
-            if (password.value === confirm.value) {
-                // Match
-                matchIcon.classList.remove('hidden');
-                matchError.classList.add('hidden');
-                confirm.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
-                confirm.classList.add('border-green-500', 'focus:border-green-500', 'focus:ring-green-500');
-            } else {
-                // No Match
-                matchIcon.classList.add('hidden');
-                matchError.classList.remove('hidden');
-                confirm.classList.remove('border-green-500', 'focus:border-green-500', 'focus:ring-green-500');
-                confirm.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
-            }
-        }
-
-        password.addEventListener('input', checkMatch);
-        confirm.addEventListener('input', checkMatch);
-
-        // Prevent submit if passwords don't match
-        document.getElementById('regForm').addEventListener('submit', function(e) {
-            if(password.value !== confirm.value) {
-                e.preventDefault();
-                alert("Passwords do not match!");
-            } else {
-                submitBtn.innerText = 'Creating Account...';
-                submitBtn.classList.add('opacity-75');
-            }
-        });
-    </script>
+    <script src="/assets/js/register.js"></script>
 </body>
 </html>
