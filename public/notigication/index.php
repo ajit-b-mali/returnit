@@ -1,18 +1,5 @@
-<!-- CREATE TABLE notifications (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    type VARCHAR(20) DEFAULT 'info', /* info, alert, success */
-    title VARCHAR(100),
-    message TEXT,
-    is_read TINYINT(1) DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-); -->
-
-
 <?php
-// Note: session_start() is usually handled in header.php, but if you don't use it, uncomment below:
-// session_start();
+session_start();
 
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/header.php'; // Your header file

@@ -4,6 +4,14 @@
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
+.glass {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
 
 .text-gradient {
     background: linear-gradient(to right, #4F46E5, #10B981);
@@ -21,5 +29,11 @@
 }
 
 /* Scrollbar hiding for cleaner look on split screen */
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}

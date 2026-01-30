@@ -1,182 +1,164 @@
-<!-- <?php
-// session_start();
-// require_once __DIR__ . '/../config/db.php';
+<?php
+// // session_start();
+// // require_once __DIR__ . '/../config/db.php';
 
-// // // 1. Auth Guard
-// // if (!isset($_SESSION['user_id'])) {
-// //     header("Location: login.php");
-// //     exit;
+// // // // 1. Auth Guard
+// // // if (!isset($_SESSION['user_id'])) {
+// // //     header("Location: login.php");
+// // //     exit;
+// // // }
+
+// // $user_id = $_SESSION['user_id'];
+// // $username = $_SESSION['username'];
+// // $msg = "";
+
+// // // 2. Handle Form Submissions (Add & Updates)
+// // if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    
+// //     // --- ADD ITEM ---
+// //     if (isset($_POST['add_item'])) {
+// //         $name = trim($_POST['item_name']);
+// //         $borrower = trim($_POST['borrower']);
+// //         $date = $_POST['due_date']; // Optional
+        
+// //         if(!empty($name) && !empty($borrower)) {
+// //             $stmt = $pdo->prepare("INSERT INTO items (user_id, item_name, borrower, due_date) VALUES (?, ?, ?, ?)");
+// //             $stmt->execute([$user_id, $name, $borrower, $date]);
+// //             $msg = "Item added successfully!";
+// //         }
+// //     }
+
+// //     // --- ADD DEBT ---
+// //     if (isset($_POST['add_debt'])) {
+// //         $amount = $_POST['amount'];
+// //         $borrower = trim($_POST['borrower']);
+// //         $desc = trim($_POST['description']);
+        
+// //         if(!empty($amount) && !empty($borrower)) {
+// //             $stmt = $pdo->prepare("INSERT INTO debts (user_id, amount, borrower, description) VALUES (?, ?, ?, ?)");
+// //             $stmt->execute([$user_id, $amount, $borrower, $desc]);
+// //             $msg = "Debt recorded successfully!";
+// //         }
+// //     }
+
+// //     // --- TOGGLE STATUS (Item Returned / Debt Paid) ---
+// //     if (isset($_POST['toggle_status'])) {
+// //         $id = $_POST['id'];
+// //         $type = $_POST['type']; // 'item' or 'debt'
+        
+// //         if ($type === 'item') {
+// //             $stmt = $pdo->prepare("UPDATE items SET returned = NOT returned WHERE id = ? AND user_id = ?");
+// //         } else {
+// //             $stmt = $pdo->prepare("UPDATE debts SET paid = NOT paid WHERE id = ? AND user_id = ?");
+// //         }
+// //         $stmt->execute([$id, $user_id]);
+// //     }
 // // }
 
-// $user_id = $_SESSION['user_id'];
-// $username = $_SESSION['username'];
-// $msg = "";
+// // // 3. Fetch Data
+// // // Fetch Items
+// // $stmt = $pdo->prepare("SELECT * FROM items WHERE user_id = ? ORDER BY created_at DESC");
+// // $stmt->execute([$user_id]);
+// // $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// // 2. Handle Form Submissions (Add & Updates)
-// if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    
-//     // --- ADD ITEM ---
-//     if (isset($_POST['add_item'])) {
-//         $name = trim($_POST['item_name']);
-//         $borrower = trim($_POST['borrower']);
-//         $date = $_POST['due_date']; // Optional
-        
-//         if(!empty($name) && !empty($borrower)) {
-//             $stmt = $pdo->prepare("INSERT INTO items (user_id, item_name, borrower, due_date) VALUES (?, ?, ?, ?)");
-//             $stmt->execute([$user_id, $name, $borrower, $date]);
-//             $msg = "Item added successfully!";
-//         }
-//     }
+// // // Fetch Debts
+// // $stmt = $pdo->prepare("SELECT * FROM debts WHERE user_id = ? ORDER BY created_at DESC");
+// // $stmt->execute([$user_id]);
+// // $debts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-//     // --- ADD DEBT ---
-//     if (isset($_POST['add_debt'])) {
-//         $amount = $_POST['amount'];
-//         $borrower = trim($_POST['borrower']);
-//         $desc = trim($_POST['description']);
-        
-//         if(!empty($amount) && !empty($borrower)) {
-//             $stmt = $pdo->prepare("INSERT INTO debts (user_id, amount, borrower, description) VALUES (?, ?, ?, ?)");
-//             $stmt->execute([$user_id, $amount, $borrower, $desc]);
-//             $msg = "Debt recorded successfully!";
-//         }
-//     }
+// // // Calculate Stats
+// // $total_lent_items = count($items);
+// // $active_items = count(array_filter($items, fn($i) => !$i['returned']));
+// // $total_owed_money = 0;
+// // foreach($debts as $d) { if(!$d['paid']) $total_owed_money += $d['amount']; }
 
-//     // --- TOGGLE STATUS (Item Returned / Debt Paid) ---
-//     if (isset($_POST['toggle_status'])) {
-//         $id = $_POST['id'];
-//         $type = $_POST['type']; // 'item' or 'debt'
-        
-//         if ($type === 'item') {
-//             $stmt = $pdo->prepare("UPDATE items SET returned = NOT returned WHERE id = ? AND user_id = ?");
-//         } else {
-//             $stmt = $pdo->prepare("UPDATE debts SET paid = NOT paid WHERE id = ? AND user_id = ?");
-//         }
-//         $stmt->execute([$id, $user_id]);
-//     }
+// ?>
+
+<?php
+// session_start();
+
+// // --- DEMO MODE SETUP ---
+// // We are skipping the database connection and auth check for this demo.
+// // In a real app, you would check $_SESSION['user_id'] here.
+
+// // 1. Simulate a Logged-In User
+// if (!isset($_SESSION['username'])) {
+//     $_SESSION['user_id'] = 999;
+//     $_SESSION['username'] = "Demo User";
 // }
+// $username = $_SESSION['username'];
 
-// // 3. Fetch Data
-// // Fetch Items
-// $stmt = $pdo->prepare("SELECT * FROM items WHERE user_id = ? ORDER BY created_at DESC");
-// $stmt->execute([$user_id]);
-// $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// // 2. Create Dummy Data for Items (Simulating a DB Fetch)
+// $items = [
+//     // [
+//     //     'id' => 1,
+//     //     'item_name' => 'GoPro Hero 9',
+//     //     'borrower' => 'Alice Smith',
+//     //     'created_at' => '2023-10-15',
+//     //     'returned' => 0 // 0 = With Borrower
+//     // ],
+//     // [
+//     //     'id' => 2,
+//     //     'item_name' => 'Harry Potter Book Set',
+//     //     'borrower' => 'John Doe',
+//     //     'created_at' => '2023-09-20',
+//     //     'returned' => 1 // 1 = Returned
+//     // ],
+//     // [
+//     //     'id' => 3,
+//     //     'item_name' => 'Power Drill (Makita)',
+//     //     'borrower' => 'Neighbor Mike',
+//     //     'created_at' => '2023-11-01',
+//     //     'returned' => 0
+//     // ]
+// ];
 
-// // Fetch Debts
-// $stmt = $pdo->prepare("SELECT * FROM debts WHERE user_id = ? ORDER BY created_at DESC");
-// $stmt->execute([$user_id]);
-// $debts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// // 3. Create Dummy Data for Debts (Simulating a DB Fetch)
+// $debts = [
+//     // [
+//     //     'id' => 101,
+//     //     'description' => 'Friday Night Pizza',
+//     //     'borrower' => 'Sarah Connor',
+//     //     'amount' => 45.50,
+//     //     'paid' => 0 // 0 = Unpaid
+//     // ],
+//     // [
+//     //     'id' => 102,
+//     //     'description' => 'Concert Tickets',
+//     //     'borrower' => 'Tom Hardy',
+//     //     'amount' => 120.00,
+//     //     'paid' => 1 // 1 = Paid
+//     // ],
+//     // [
+//     //     'id' => 103,
+//     //     'description' => 'Uber Share',
+//     //     'borrower' => 'Alice Smith',
+//     //     'amount' => 15.25,
+//     //     'paid' => 0
+//     // ]
+// ];
 
-// // Calculate Stats
+// // 4. Calculate Stats (Logic remains the same)
 // $total_lent_items = count($items);
 // $active_items = count(array_filter($items, fn($i) => !$i['returned']));
 // $total_owed_money = 0;
-// foreach($debts as $d) { if(!$d['paid']) $total_owed_money += $d['amount']; }
+// foreach($debts as $d) { 
+//     if(!$d['paid']) $total_owed_money += $d['amount']; 
+// }
 
-?> -->
-
-<?php
-session_start();
-
-// --- DEMO MODE SETUP ---
-// We are skipping the database connection and auth check for this demo.
-// In a real app, you would check $_SESSION['user_id'] here.
-
-// 1. Simulate a Logged-In User
-if (!isset($_SESSION['username'])) {
-    $_SESSION['user_id'] = 999;
-    $_SESSION['username'] = "Demo User";
-}
-$username = $_SESSION['username'];
-
-// 2. Create Dummy Data for Items (Simulating a DB Fetch)
-$items = [
-    // [
-    //     'id' => 1,
-    //     'item_name' => 'GoPro Hero 9',
-    //     'borrower' => 'Alice Smith',
-    //     'created_at' => '2023-10-15',
-    //     'returned' => 0 // 0 = With Borrower
-    // ],
-    // [
-    //     'id' => 2,
-    //     'item_name' => 'Harry Potter Book Set',
-    //     'borrower' => 'John Doe',
-    //     'created_at' => '2023-09-20',
-    //     'returned' => 1 // 1 = Returned
-    // ],
-    // [
-    //     'id' => 3,
-    //     'item_name' => 'Power Drill (Makita)',
-    //     'borrower' => 'Neighbor Mike',
-    //     'created_at' => '2023-11-01',
-    //     'returned' => 0
-    // ]
-];
-
-// 3. Create Dummy Data for Debts (Simulating a DB Fetch)
-$debts = [
-    // [
-    //     'id' => 101,
-    //     'description' => 'Friday Night Pizza',
-    //     'borrower' => 'Sarah Connor',
-    //     'amount' => 45.50,
-    //     'paid' => 0 // 0 = Unpaid
-    // ],
-    // [
-    //     'id' => 102,
-    //     'description' => 'Concert Tickets',
-    //     'borrower' => 'Tom Hardy',
-    //     'amount' => 120.00,
-    //     'paid' => 1 // 1 = Paid
-    // ],
-    // [
-    //     'id' => 103,
-    //     'description' => 'Uber Share',
-    //     'borrower' => 'Alice Smith',
-    //     'amount' => 15.25,
-    //     'paid' => 0
-    // ]
-];
-
-// 4. Calculate Stats (Logic remains the same)
-$total_lent_items = count($items);
-$active_items = count(array_filter($items, fn($i) => !$i['returned']));
-$total_owed_money = 0;
-foreach($debts as $d) { 
-    if(!$d['paid']) $total_owed_money += $d['amount']; 
-}
-
-// 5. Handle Mock Form Submissions (Just for UI feedback)
-$msg = "";
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $msg = "Action simulated! (Connect DB to save changes)";
-    // In a real app, SQL INSERT/UPDATE queries would go here.
-}
+// // 5. Handle Mock Form Submissions (Just for UI feedback)
+// $msg = "";
+// if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+//     $msg = "Action simulated! (Connect DB to save changes)";
+//     // In a real app, SQL INSERT/UPDATE queries would go here.
+// }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - ReturnIt</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Space Grotesk', 'sans-serif'] },
-                    colors: { primary: '#4F46E5', secondary: '#10B981', dark: '#0F172A' }
-                }
-            }
-        }
-    </script>
-    <style>
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-    </style>
-</head>
+
+<?php require '../../app/Views/components/head.php'; ?>
+
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen">
 
     <nav class="sticky top-0 z-40 w-full glass border-b border-slate-200">
@@ -188,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
                 <div class="flex items-center gap-4">
                     <span class="text-sm text-slate-500">Hi, <strong class="text-slate-900"><?php echo htmlspecialchars($username); ?></strong></span>
-                    <a href="logout.php" class="text-sm text-slate-500 hover:text-red-500 transition-colors"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    <a href="/logout" class="text-sm text-slate-500 hover:text-red-500 transition-colors"><i class="fas fa-sign-out-alt"></i> Logout</a>
                 </div>
             </div>
         </div>
