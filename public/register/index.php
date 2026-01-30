@@ -143,7 +143,7 @@
                                 <input type="password" name="confirm_password" id="confirm_password" required 
                                     class="block w-full pl-10 pr-10 py-3 border border-slate-300 rounded-xl bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm transition-all" 
                                     placeholder="Re-enter password">
-                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none hidden" id="matchIcon">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none" id="matchIcon">
                                     <i class="fas fa-check-circle text-green-500"></i>
                                 </div>
                             </div>
