@@ -6,7 +6,7 @@ require_once __DIR__ . '/includes/header.php'; // Your header file
 
 // 1. Auth Guard
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: /login");
     exit;
 }
 

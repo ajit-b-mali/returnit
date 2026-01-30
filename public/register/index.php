@@ -4,7 +4,7 @@
 
     // 1. Redirect if already logged in
     if (isset($_SESSION['user_id'])) {
-        header("Location: dashboard.php");
+        header("Location: /dashboard");
         exit;
     }
 
@@ -96,7 +96,7 @@
                 <?php endif; ?>
 
                 <div class="mt-8">
-                    <form action="/register" method="POST" class="space-y-5" id="regForm">
+                    <form method="POST" id="regForm" class="space-y-5" >
                         
                         <div>
                             <label for="username" class="block text-sm font-medium text-slate-700">Username</label>
@@ -222,6 +222,8 @@
         </div>
     </div>
 
+    <script src="/assets/js/common.js"></script>
+    <script src="/assets/js/auth.js"></script>
     <script src="/assets/js/register.js"></script>
 </body>
 </html>

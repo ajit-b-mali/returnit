@@ -30,7 +30,7 @@
                             Stop wondering "Who has my lawnmower?" or "Did John pay me back?". ReturnIt is the secure, minimalist dashboard for your personal lending.
                         </p>
                         <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                            <a href="register.php" class="px-8 py-4 bg-slate-900 text-white rounded-xl font-semibold hover:bg-primary transition-all duration-300 shadow-xl hover:shadow-primary/25 transform hover:-translate-y-1 text-center">
+                            <a href="/register" class="px-8 py-4 bg-slate-900 text-white rounded-xl font-semibold hover:bg-primary transition-all duration-300 shadow-xl hover:shadow-primary/25 transform hover:-translate-y-1 text-center">
                                 Create Free Account
                             </a>
                             <a href="#features" class="px-8 py-4 bg-white text-slate-700 border border-slate-200 rounded-xl font-semibold hover:bg-slate-50 transition-all duration-300 hover:border-slate-300 text-center">
@@ -231,6 +231,7 @@
 
     <?php require '../app/Views/components/footer.php'; ?>
 
+    <script src="/assets/js/common.js"></script>
     <script src="/assets/js/typewriter.js"></script>
 
 </body>

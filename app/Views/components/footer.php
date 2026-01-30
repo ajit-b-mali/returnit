@@ -6,7 +6,7 @@
                 <span class="font-display font-bold text-xl text-slate-900">ReturnIt</span>
             </div>
             <div class="flex gap-6 text-slate-500">
-                <a href="#" class="hover:text-primary transition"><i class="fab fa-github text-xl"></i></a>
+                <a href="https://github.com/ajit-b-mali/returnit" target="_blank" class="hover:text-primary transition"><i class="fab fa-github text-xl"></i></a>
                 <a href="#" class="hover:text-primary transition"><i class="fab fa-twitter text-xl"></i></a>
             </div>
         </div>

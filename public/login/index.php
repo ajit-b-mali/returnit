@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['username'] = $user['username'];
                 
                 // Redirect to dashboard
-                header("Location: dashboard.php");
+                header("Location: /dashboard");
                 exit;
             } else {
                 $error = "Invalid email or password.";
@@ -125,7 +125,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <div class="mt-8">
                     <!-- Login Form -->
-                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST" class="space-y-6">
+                    <form id="loginForm" method="POST" class="space-y-6">
                         
                         <!-- Email Input -->
                         <div>
@@ -253,6 +253,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </div>
 
-    <script src="/assets/js/dark.js"></script>
+    <script src="/assets/js/common.js"></script>
+    <script src="/assets/js/auth.js"></script>
+    <script src="/assets/js/login.js"></script>
 </body>
 </html>

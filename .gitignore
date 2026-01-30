@@ -64,3 +64,4 @@ yarn-error.log
 *.old
 
 secrets.php
+*.temp

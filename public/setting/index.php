@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
         <h3 class="text-lg font-bold text-slate-900 mb-4">Security</h3>
-        <form action="" method="POST" class="max-w-md space-y-4">
+        <form method="POST" class="max-w-md space-y-4">
             <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Current Password</label>
                 <input type="password" class="w-full border-slate-300 rounded-lg">
