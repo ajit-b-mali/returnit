@@ -7,9 +7,16 @@ tailwind.config = {
                 display: ['Space Grotesk', 'sans-serif'],
             },
             colors: {
-                primary: '#4F46E5', // Indigo 600
-                secondary: '#10B981', // Emerald 500
-                dark: '#0F172A', // Slate 900
+                // This maps the Tailwind classes to your CSS variables
+                primary: 'rgb(var(--color-primary) / <alpha-value>)',
+                secondary: 'rgb(var(--color-secondary) / <alpha-value>)',
+                
+                background: 'rgb(var(--color-bg) / <alpha-value>)',
+                surface: 'rgb(var(--color-surface) / <alpha-value>)',
+                
+                main: 'rgb(var(--color-text-main) / <alpha-value>)',
+                muted: 'rgb(var(--color-text-muted) / <alpha-value>)',
+                border: 'rgb(var(--color-border) / <alpha-value>)',
             },
             animation: {
                 'float': 'float 6s ease-in-out infinite',

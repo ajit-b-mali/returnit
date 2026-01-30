@@ -1,39 +1,99 @@
-/* Custom Utilities */
+/* style.css */
+
+/* Define your variables */
+:root {
+    /* --- LIGHT MODE (Default) --- */
+    /* Indigo-600 */
+    --color-primary: 79 70 229;     
+    /* Emerald-500 */
+    --color-secondary: 16 185 129;  
+    /* Slate-50 */
+    --color-bg: 248 250 252;        
+    /* White */
+    --color-surface: 255 255 255;   
+    /* Slate-900 */
+    --color-text-main: 15 23 42;    
+    /* Slate-600 */
+    --color-text-muted: 71 85 105; 
+    /* Slate-200 */
+    --color-border: 226 232 240;    
+}
+
+.dark {
+    /* --- DARK MODE (Overrides) --- */
+    /* Indigo-400 (Lighter for dark mode) */
+    --color-primary: 129 140 248;   
+    /* Emerald-400 */
+    --color-secondary: 52 211 153;  
+    /* Slate-900 */
+    --color-bg: 15 23 42;           
+    /* Slate-800 */
+    --color-surface: 30 41 59;      
+    /* Slate-100 */
+    --color-text-main: 241 245 249; 
+    /* Slate-400 */
+    --color-text-muted: 148 163 184; 
+    /* Slate-700 */
+    --color-border: 51 65 85;       
+}
+
+/* Global Body Styles */
+body {
+    background-color: rgb(var(--color-bg));
+    color: rgb(var(--color-text-main));
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Glass Card Utility 
+   We write this in standard CSS because @apply works differently in CDN 
+   unless you use <style type="text/tailwindcss">, but this is safer.
+*/
 .glass-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-.glass {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-}
-
-.hide-scrollbar::-webkit-scrollbar {
-    display: none;
+    backdrop-filter: blur(12px);
+    border: 1px solid;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    transition: all 0.3s;
+    
+    /* Light Mode Glass */
+    background-color: rgba(255, 255, 255, 0.6);
+    border-color: rgba(255, 255, 255, 0.4);
 }
 
-.text-gradient {
-    background: linear-gradient(to right, #4F46E5, #10B981);
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+.dark .glass-card {
+    /* Dark Mode Glass */
+    background-color: rgba(30, 41, 59, 0.6);
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
-.cursor-blink {
-    animation: blink 1s step-end infinite;
+/* Animations */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+.animate-float {
+    animation: float 6s ease-in-out infinite;
 }
 
-@keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
+@keyframes blob {
+    0% { transform: translate(0px, 0px) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+    100% { transform: translate(0px, 0px) scale(1); }
 }
+.animate-blob {
+    animation: blob 7s infinite;
+}
+.animation-delay-2000 { animation-delay: 2s; }
+.animation-delay-4000 { animation-delay: 4s; }
 
-/* Scrollbar hiding for cleaner look on split screen */
-.no-scrollbar::-webkit-scrollbar {
-    display: none;
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1; /* slate-300 */
+    border-radius: 9999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
 }
-
-.no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
+.dark ::-webkit-scrollbar-thumb { background: #334155; /* slate-700 */ }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
