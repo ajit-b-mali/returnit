@@ -5,7 +5,7 @@
  */
 
 session_start();
-require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../../app/config/db.php';
 
 // --------------------------------------------------------------------------
 // 1. Redirect if already logged in
@@ -70,21 +70,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <!-- ======================================================================= -->
         <div class="flex-1 flex flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24 z-10 bg-white dark:bg-slate-900 relative transition-colors duration-200">
             
-            <!-- Dark Mode Toggle (Absolute Top Right of Left Panel) -->
-            <button onclick="toggleTheme()" class="absolute top-6 right-6 p-2 rounded-full text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-colors">
-                <i class="fas fa-moon hidden dark:block"></i> <!-- Icon for when it is dark (to switch to light) -->
-                <i class="fas fa-sun block dark:hidden"></i>   <!-- Icon for when it is light (to switch to dark) -->
-            </button>
-
             <div class="mx-auto w-full max-w-sm lg:w-96">
                 
                 <!-- Logo -->
-                <a href="/" class="flex items-center gap-2 mb-10 group">
-                    <div class="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded flex items-center justify-center text-white font-bold shadow-md group-hover:scale-110 transition-transform">
-                        R
+                <div class="flex justify-between">
+                    <a href="/" class="flex items-center gap-2 mb-10 group">
+                        <div class="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded flex items-center justify-center text-white font-bold shadow-md group-hover:scale-110 transition-transform">
+                            R
+                        </div>
+                        <span class="font-display font-bold text-xl text-slate-900 dark:text-white transition-colors">ReturnIt</span>
+                    </a>
+
+                    <div>
+                        <?php require __DIR__ . '/../../app/Views/components/themeToggle.php'; ?>
                     </div>
-                    <span class="font-display font-bold text-xl text-slate-900 dark:text-white transition-colors">ReturnIt</span>
-                </a>
+
+                </div>
+
 
                 <!-- Header Text -->
                 <div class="mb-8">
@@ -170,7 +172,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                         <!-- Submit Button -->
                         <div>
-                            <button type="submit" id="submitBtn" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-slate-900 dark:bg-primary hover:bg-slate-800 dark:hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg">
+                            <button type="submit" id="submitBtn" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl text-sm font-semibold text-white bg-slate-900 dark:bg-primary hover:bg-slate-800 dark:hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg">
                                 <span id="btnText">Sign in</span>
                                 <i id="btnSpinner" class="fas fa-circle-notch fa-spin ml-2 hidden"></i>
                             </button>
@@ -204,10 +206,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <!-- ======================================================================= -->
         <!-- RIGHT COLUMN: Decorative Image (Hidden on Mobile) -->
         <!-- ======================================================================= -->
-        <div class="hidden lg:block relative w-0 flex-1 bg-slate-900 overflow-hidden sticky top-0 h-screen">
+        <div class="hidden lg:block w-0 flex-1 bg-background overflow-hidden relative">
             <!-- Background Gradient Blobs -->
-            <div class="absolute top-0 -left-4 w-96 h-96 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-            <div class="absolute bottom-0 -right-4 w-96 h-96 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+            <div class="absolute top-0 -left-4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-20 animate-blob"></div>
+            <div class="absolute bottom-0 -right-4 w-96 h-96 bg-emerald-500 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
             
             <!-- Glass Card Testimonial -->
             <div class="absolute inset-0 flex flex-col justify-center items-center z-10 px-12">
@@ -217,15 +219,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             JD
                         </div>
                         <div>
-                            <h3 class="text-white font-bold text-lg">Debt Settled!</h3>
-                            <p class="text-indigo-200 text-sm">Just now</p>
+                            <h3 class="text-main font-bold text-lg">Debt Settled!</h3>
+                            <p class="text-muted text-sm">Just now</p>
                         </div>
                         <div class="ml-auto">
-                            <span class="bg-green-500/20 text-green-300 text-xs font-bold px-2 py-1 rounded-full border border-green-500/30">+$45.00</span>
+                            <span class="bg-green-500/10 text-green-500 text-xs font-bold px-2 py-1 rounded-full border border-green-500/20">+$45.00</span>
                         </div>
                     </div>
-                    <div class="h-px bg-white/10 w-full mb-4"></div>
-                    <p class="text-slate-300 italic text-lg leading-relaxed">
+                    <div class="h-px bg-border w-full mb-4"></div>
+                    <p class="text-main italic text-lg leading-relaxed">
                         "Finally, a simple way to track who has my power tools. I stopped losing money on forgotten loans the first week I used ReturnIt."
                     </p>
                     <div class="mt-4 flex items-center gap-2">
@@ -236,7 +238,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <i class="fas fa-star"></i>
                             <i class="fas fa-star"></i>
                         </div>
-                        <span class="text-sm text-slate-400 font-medium">Verified User</span>
+                        <span class="text-sm text-muted font-medium">Verified User</span>
                     </div>
                 </div>
             </div>

@@ -1,40 +1,39 @@
 /* style.css */
 
 /* Define your variables */
-:root {
-    /* --- LIGHT MODE (Default) --- */
-    /* Indigo-600 */
-    --color-primary: 79 70 229;     
-    /* Emerald-500 */
-    --color-secondary: 16 185 129;  
-    /* Slate-50 */
-    --color-bg: 248 250 252;        
-    /* White */
-    --color-surface: 255 255 255;   
-    /* Slate-900 */
-    --color-text-main: 15 23 42;    
-    /* Slate-600 */
-    --color-text-muted: 71 85 105; 
-    /* Slate-200 */
-    --color-border: 226 232 240;    
+:root, .force-light {
+    --color-primary: 79 70 229;     /* Indigo-600 */
+    --color-secondary: 16 185 129;  /* Emerald-500 */
+    --color-bg: 248 250 252;        /* Slate-50 */
+    --color-surface: 255 255 255;   /* White */
+    --color-text-main: 15 23 42;    /* Slate-900 */
+    --color-text-muted: 71 85 105;  /* Slate-600 */
+    --color-border: 226 232 240;    /* Slate-200 */
 }
 
-.dark {
-    /* --- DARK MODE (Overrides) --- */
-    /* Indigo-400 (Lighter for dark mode) */
-    --color-primary: 129 140 248;   
-    /* Emerald-400 */
-    --color-secondary: 52 211 153;  
-    /* Slate-900 */
-    --color-bg: 15 23 42;           
-    /* Slate-800 */
-    --color-surface: 30 41 59;      
-    /* Slate-100 */
-    --color-text-main: 241 245 249; 
-    /* Slate-400 */
-    --color-text-muted: 148 163 184; 
-    /* Slate-700 */
-    --color-border: 51 65 85;       
+/* 2. Shared Dark Mode Values */
+.dark, .force-dark {
+    --color-primary: 129 140 248;   /* Indigo-400 */
+    --color-secondary: 52 211 153;  /* Emerald-400 */
+    --color-bg: 15 23 42;           /* Slate-900 */
+    --color-surface: 30 41 59;      /* Slate-800 */
+    --color-text-main: 241 245 249; /* Slate-100 */
+    --color-text-muted: 148 163 184;/* Slate-400 */
+    --color-border: 51 65 85;       /* Slate-700 */
+}
+
+/* 3. Force Scope Applicators 
+   These ensure the background and text colors update immediately 
+   when you use the class on a specific container.
+*/
+.force-light {
+    background-color: rgb(var(--color-bg));
+    color: rgb(var(--color-text-main));
+}
+
+.force-dark {
+    background-color: rgb(var(--color-bg));
+    color: rgb(var(--color-text-main));
 }
 
 /* Global Body Styles */
